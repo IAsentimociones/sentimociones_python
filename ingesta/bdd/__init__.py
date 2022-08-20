@@ -6,4 +6,4 @@ Este paquete incluye funciones para base de datos.
 
 """
 
-import lib.bdd.mongoDB_cliente
+import bdd.mongoDB_cliente
