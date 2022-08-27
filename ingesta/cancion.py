@@ -5,6 +5,8 @@ Implementación de lógica de negocio para canciones
 """
 from bdd import mongoDB_cliente
 
+ESTADO_SIN_LETRA = "SIN LETRA"
+
 def insertarCancionCantante(elementosExtraidos):
     """
     Función que inserta una coleccion de de canciones y sus cantantes en BDD
@@ -17,7 +19,7 @@ def insertarCancionCantante(elementosExtraidos):
     for elemento in elementosExtraidos:
         ranking, cancion, cantante = elemento
         # inserta colecciones de canciones en MongoDB
-        cancion_id = mongoDB_cliente.insertarDocumento("CANCIONES", {"cancion": cancion, "cantante": cantante})
+        cancion_id = mongoDB_cliente.insertarDocumento("CANCIONES", {"cancion": cancion, "cantante": cantante, "estado": ESTADO_SIN_LETRA})
         # obtiene lista 
         lista_canciones.append({"ranking": ranking, "cancion_id": cancion_id})
        
