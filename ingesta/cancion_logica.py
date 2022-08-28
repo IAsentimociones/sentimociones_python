@@ -6,7 +6,7 @@ Implementación de lógica de negocio para canciones
 from bdd import mongoDB_cliente
 
 ESTADO_SIN_LETRA = "SIN LETRA"
-ESTADO_CON_LETRA = "SIN LETRA"
+ESTADO_CON_LETRA = "CON LETRA"
 NOMBRE_COLECCION_CANCIONES = "CANCIONES"
 
 def insertarCancionCantante(elementosExtraidos):
@@ -45,7 +45,9 @@ def actualizarCancionPendiente(coleccion_cancion_pendiente, letra_cancion):
         coleccion_cancion_pendiente: objeto de tipo colección de canción
         letra_cancion: letra de la canción
     """
-    mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
-        {"$set": {'letra': letra_cancion, 'estado': ESTADO_CON_LETRA}})
-       
-    return "documento actualizado correctamente"
+    if letra_cancion == '':
+        return "La letra de canción es requerida"
+    else:
+        mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
+            {"$set": {'letra': letra_cancion, 'estado': ESTADO_CON_LETRA}})
+        return "documento actualizado correctamente"
