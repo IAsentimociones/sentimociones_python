@@ -7,6 +7,7 @@ import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 import cancion_logica
+from comun import cadena
 
 
 def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
@@ -28,7 +29,9 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
     # prepara URL de Lyrics para buscar letras por cancion y autor
     cancion_autor_code_url = urllib.parse.quote(cancion_code_url + ' ' + cantante_code_url)
     url_busqueda_lyrics = '%s%s' % (WEB_LYRICS, cancion_autor_code_url) 
+    print('------------------')
     print('URL búsqueda en Lyrics: ', url_busqueda_lyrics)
+    print('------------------')
 
     # obtiene del contenido web la letra de la canción
     page = requests.get(url_busqueda_lyrics)
@@ -55,17 +58,26 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
         print("url letra lyrics: ", ref.attrs['onclick'])
         print("cancion bdd: " + nombre_cancion)
         print("autor bdd: " + nombre_autor)
-        print('-----------------')
-
+        
         # valida autor y canción para obtener el enlace a la letra de la canción
-        if cancion_lyrics.casefold() == nombre_cancion.casefold() and autor_lyrics.casefold() == nombre_autor.casefold():
+        if ((cadena.contieneCadena(cancion_lyrics, nombre_cancion) and cadena.contieneCadena(autor_lyrics, nombre_autor)) 
+            or (cadena.contieneCadena(nombre_cancion, cancion_lyrics) and cadena.contieneCadena(nombre_autor, autor_lyrics))):
             url_letra_cancion =  ref.attrs['onclick']
             print (url_letra_cancion)
+        else:
+            print('autor y canción no coinciden')
+            print('-----------------')
+
         
-    if url_letra_cancion != '':
+    if url_letra_cancion == '':
+        print('No se pudo determinar la URL de la canción')
+        print('-----------------')
+    else:
         print ('referencia url letra canción: ', url_letra_cancion)
         url_letra_cancion = url_letra_cancion.split('=')[1].replace('\'','')
         print ('url letra canción: ', url_letra_cancion)
+        print('-----------------')
+
         
         # obtiene contenido de la página web de la letra de la canción
         page_letra_cancion = requests.get(url_letra_cancion)
