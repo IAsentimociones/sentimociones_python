@@ -41,3 +41,28 @@ def insertarDocumentos(coleccion, documentos):
     coleccion_db = base_datos[coleccion]
     resultado = coleccion_db.insert_many(documentos)
     return resultado.inserted_ids
+
+def obtenerColeccion(nombre_coleccion, filtro):
+    """
+    Función que obtiene lista de canciones por cadena de atributos
+    Argumentos:
+        filtro: estado de la canción
+    Retorna: listado de canciones
+    """
+    base_datos = conectar()
+    coleccion_db = base_datos[nombre_coleccion]
+    canciones = coleccion_db.find(filtro).limit(1) # quitar el limite para obtener todas las canciones sin letras
+    return canciones
+
+def actualizarColeccion(nombre_coleccion, coleccion, atributos):
+    """
+    Función que actualiza una colección existen con actuales o nuevos atributos 
+    Argumentos:
+        nombre_coleccion: nombre de la colección
+        coleccion: objeto de la coleccion a modificar
+        atributos: actuales o nuevos atributos con sus valores
+    Retorna: identificadores de los documentos insertados
+    """
+    base_datos = conectar()
+    coleccion_db = base_datos[nombre_coleccion]
+    coleccion_db.update_one(coleccion, atributos)
