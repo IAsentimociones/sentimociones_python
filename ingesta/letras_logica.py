@@ -23,8 +23,8 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
     letra_cancion = ''
 
     # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
-    cancion_code_url = urllib.parse.quote(nombre_cancion)
-    cantante_code_url = urllib.parse.quote(nombre_autor)
+    cancion_code_url = urllib.parse.quote(cadena.prepararCadena(nombre_cancion))
+    cantante_code_url = urllib.parse.quote(cadena.prepararCadena(nombre_autor))
 
     # prepara URL de Lyrics para buscar letras por cancion y autor
     cancion_autor_code_url = urllib.parse.quote(cancion_code_url + ' ' + cantante_code_url)

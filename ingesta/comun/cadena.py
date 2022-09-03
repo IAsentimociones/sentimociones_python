@@ -4,20 +4,50 @@ Módulo cadena.py
 Funciones comunes para cadenas de texto o alfanumericos
 """
 from re import search
+import unicodedata
 
-CARACTERES_ESPECIALES = "!()/[]@"
+CARACTERES_ESPECIALES = "!()/[]@:,."
 
-def limpiarCadena(cadena):
+def limpiarCaractersEspeciales(cadena):
     """
-    Función que limia caracteres especiales  
+    Función que elimia caracteres especiales  
     Argumentos:
         cadena: cadena de texto alfanumérico
     Retorna: cadena limpia de caracteres especias
     """
-    cadena_limpia = cadena
+    cadena_sin_caracteres = cadena
     for caracter in CARACTERES_ESPECIALES:
-        cadena_limpia = cadena_limpia.replace(caracter, "")
-    return cadena_limpia
+        cadena_sin_caracteres = cadena_sin_caracteres.replace(caracter, "")
+    return cadena_sin_caracteres
+
+def limpiarTildes(cadena):
+    """
+    Función que elimia tildes de una cadena de texto alfanumerico  
+    Argumentos:
+        cadena: cadena de texto alfanumérico
+    Retorna: cadena limpia de tildes
+    """
+    trans_tab = dict.fromkeys(map(ord, u'\u0301\u0308'), None)
+    cadena_sin_tildes = unicodedata.normalize('NFKC', unicodedata.normalize('NFKD', cadena).translate(trans_tab))
+    return cadena_sin_tildes
+
+def prepararCadena(cadena):
+    """
+    Función que prepara una cadena de texto alfanumérico limpiando y estandarizando  
+    Argumentos:
+        cadena: cadena de texto alfanumérico
+    Retorna: cadena preprocesada
+    """
+    # tranforma cadena minúsculas
+    cadena_pre = cadena.casefold();
+
+    # limpia de caracteres especiales
+    cadena_pre = limpiarCaractersEspeciales(cadena_pre)
+
+    # limpa de tildes
+    cadena_pre = limpiarTildes(cadena_pre)
+
+    return cadena_pre
 
 def contieneCadena(cadena, cadena_completa):
     """
@@ -28,8 +58,8 @@ def contieneCadena(cadena, cadena_completa):
     Retorna: True (si la cadena completa contiene la cadena simple)
     """
     # preprocesa cadenas antes de compararlos
-    simple = limpiarCadena(cadena.casefold())
-    completa = limpiarCadena(cadena_completa.casefold())
+    simple = prepararCadena(cadena)
+    completa = prepararCadena(cadena_completa)
 
     # compara si la cadena completa contiene la cadena simple
     if search(simple, completa):
