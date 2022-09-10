@@ -24,7 +24,7 @@ Se abordarán y desarrollarán:
 
 ***Prerequisitos***:
 
-* Librerías o frameworks de python:
+* brerías o frameworks de python:
 
   * MongoClient (pip install pymongo)
   * request (pip install request)
