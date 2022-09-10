@@ -61,8 +61,8 @@ def contieneCadena(cadena, cadena_completa):
     simple = prepararCadena(cadena)
     completa = prepararCadena(cadena_completa)
 
-    print('simple =', simple)
-    print('completa =', completa)
+    #print('simple =', simple)
+    #print('completa =', completa)
 
     # compara si la cadena completa contiene la cadena simple
     if search(simple, completa):
