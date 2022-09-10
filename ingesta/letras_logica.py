@@ -25,11 +25,13 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
     # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
     cancion_code_url = urllib.parse.quote(cadena.prepararCadena(nombre_cancion))
     cantante_code_url = urllib.parse.quote(cadena.prepararCadena(nombre_autor))
+    print('------------------')
+    print('cancion: ', cancion_code_url)
+    print('cantante: ', cantante_code_url)
 
     # prepara URL de Lyrics para buscar letras por cancion y autor
     cancion_autor_code_url = urllib.parse.quote(cancion_code_url + ' ' + cantante_code_url)
     url_busqueda_lyrics = '%s%s' % (WEB_LYRICS, cancion_autor_code_url) 
-    print('------------------')
     print('URL búsqueda en Lyrics: ', url_busqueda_lyrics)
     print('------------------')
 
@@ -89,5 +91,82 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
         for job_element in job_elements_letra:
             letra = job_element.find("pre", id="lyric-body-text")
         letra_cancion = letra.text
+
+    return letra_cancion
+
+def obtenerLetraConLetras4u(nombre_cancion, nombre_autor):
+    """
+    Función que extrae la letra de una canción desde letras4u.com 
+    Argumentos:
+        nombre_cancion: nombre de la cancion
+        nombre_autor: nombre de autor o cantante
+    Retorna: letra de la canción o vacío
+    """
+    
+    WEB_LETRAS4U = "https://www.letras4u.com/buscar.php?letrade="
+    SUBMIT_BUSCAR = '&Submit=Buscar'
+    letra_cancion = ''
+
+    # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
+    cancion_param_url = cadena.prepararCadena(nombre_cancion).replace(' ', '+').replace('++', '+')
+    cantante_param_url = cadena.prepararCadena(nombre_autor).replace(' ', '+').replace('++', '+')
+    print('------------------')
+    print('cancion: ', cancion_param_url)
+    print('cantante: ', cantante_param_url)
+
+    # prepara URL de Lyrics para buscar letras por cancion y autor
+    cancion_autor_code_url = cancion_param_url + '+' + cantante_param_url
+    url_busqueda_letras4u = '%s%s%s' % (WEB_LETRAS4U, cancion_autor_code_url, SUBMIT_BUSCAR) 
+    print('URL búsqueda en Letras4u: ', url_busqueda_letras4u)
+    print('------------------')
+
+    # Obtiene el contenido web del resultado de búsqueda
+    page_letra4u = requests.get(url_busqueda_letras4u)
+    conten_letra4u = BeautifulSoup(page_letra4u.content, "html.parser")
+
+    # Obtiene el contenido del div principal donde está el resultado de búsqueda de letras4u
+    div_main = conten_letra4u.find(id="main")
+
+    #obtiene los tipo span donde están los resultados
+    elementos_span = div_main.find_all("span")
+
+    # obtiene por cada elemento del resultado de búsquea la canción-autor para validar el enlace de la letra de la canción
+    url_letra_cancion = ''
+    for span in elementos_span:
+        link_cancion_autor = span.find("a")
+        if (hasattr(link_cancion_autor, 'text')):
+            cancion_autor = link_cancion_autor.text
+            link_letra = link_cancion_autor.get("href")  
+            print('cancion autor: ', cancion_autor)
+            print('link letra: ', link_letra)
+            # valida autor y canción para obtener el enlace a la letra de la canción
+            if cadena.contieneCadena(nombre_cancion, cancion_autor) and cadena.contieneCadena(nombre_autor, cancion_autor):
+                url_letra_cancion =  link_letra
+            else:
+                print('autor y canción no coinciden')
+                print('-----------------')
+    
+    # obtiene letra de canción
+    if url_letra_cancion == '':
+        print('No se pudo determinar la URL de la canción')
+        print('-----------------')
+    else:
+        print ('url letra canción: ', url_letra_cancion)
+        print('-----------------')
+        
+        # obtiene contenido de la página web de la letra de la canción
+        page_letra_cancion = requests.get(url_letra_cancion)
+        contenido_letra_cancion = BeautifulSoup(page_letra_cancion.content, "html.parser")
+
+        # obtiene el div principal donde está la letra de la canción
+        div_container = contenido_letra_cancion.find("div", class_="grid-container")
+
+        # obtiene el elemento table donde está la letra
+        table_elments = div_container.find_all("table")
+
+        for table in table_elments:
+            letra = table.find("td")
+            if (hasattr(letra, 'text')):
+                letra_cancion = letra_cancion + letra.text.replace('\n\n\n', '')    
 
     return letra_cancion

@@ -6,7 +6,7 @@ Funciones comunes para cadenas de texto o alfanumericos
 from re import search
 import unicodedata
 
-CARACTERES_ESPECIALES = "!()/[]@:,."
+CARACTERES_ESPECIALES = "!()/[]@:,.-"
 
 def limpiarCaractersEspeciales(cadena):
     """
