@@ -245,5 +245,74 @@ def obtenerLetraConYaLetras(nombre_cancion, nombre_autor):
         for div in divs_style:
             if (hasattr(div, 'text')):
                 letra_cancion = letra_cancion + div.text + ' '
-                
+
+    return letra_cancion
+
+def obtenerLetraConCancioneros(nombre_cancion, nombre_autor):
+    """
+    Función que extrae la letra de una canción desde cancioneros.com 
+    Argumentos:
+        nombre_cancion: nombre de la cancion
+        nombre_autor: nombre de autor o cantante
+    Retorna: letra de la canción o vacío
+    """
+    WEB_CANCIONEROS = "https://www.cancioneros.com/letras/buscar.php?CT="
+    letra_cancion = ''
+
+    # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
+    cancion_param_url = cadena.prepararCadena(nombre_cancion).replace(' ', '+').replace('++', '+')
+    cantante_param_url = cadena.prepararCadena(nombre_autor).replace(' ', '+').replace('++', '+')
+    print('------------------')
+    print('cancion: ', cancion_param_url)
+    print('cantante: ', cantante_param_url)
+
+    # prepara URL de Lyrics para buscar letras por cancion y autor
+    cancion_autor_code_url = cancion_param_url + '+' + cantante_param_url
+    url_busqueda_cancioneros = '%s%s' % (WEB_CANCIONEROS, cancion_autor_code_url) 
+    print('URL búsqueda en cancioneros.com: ', url_busqueda_cancioneros)
+    print('------------------')
+
+    # Obtiene el contenido web del resultado de búsqueda
+    page = requests.get(url_busqueda_cancioneros)
+    soup = BeautifulSoup(page.content, "html.parser")
+
+    # Obtiene el contenido del div principal donde está el resultado de búsqueda de letras4u
+    div_caixa = soup.findAll("div", class_="caixa_cerca")
+    ul_lista_can = soup.findAll("ul", class_="llista_can")
+    a_lista = soup.findAll("a")
+
+    url_letra_cancion = ''
+    for a in a_lista:
+        cancion_a = a.find("div", class_="llista_titol")
+        autor_a = a.find("div", class_="llista_artista")
+        url_letra_a = a.get("href") 
+        if cancion_a != None and autor_a != None:
+            # valida autor y canción para obtener el enlace a la letra de la canción
+            print('nombre_cancion ', nombre_cancion)
+            print('cancion_a.text ', cancion_a.text)
+            if cadena.contieneCadena(nombre_cancion, cancion_a.text) or cadena.contieneCadena(cancion_a.text, nombre_cancion):
+                url_letra_cancion =  url_letra_a
+                break
+            else:
+                print('autor y canción no coinciden')
+                print('-----------------')
+    # obtiene letra de canción
+    if url_letra_cancion == '':
+        print('No se pudo determinar la URL de la canción')
+        print('-----------------')
+    else:
+        print ('url letra canción: ', url_letra_cancion)
+        print('-----------------')
+
+        url_letra_cancion = 'https://www.cancioneros.com/letras/' + url_letra_cancion
+        page_letra_cancion = requests.get(url_letra_cancion)
+        soup_letra_cancion = BeautifulSoup(page_letra_cancion.content, "html.parser")
+
+        # obtiene el cuerpo del contenido web de la letra de la canción
+        results_letra_cancion = soup_letra_cancion.find("div", class_="inner")
+        p_letras = soup_letra_cancion.find("p", class_="lletra_can")
+        for p in p_letras:
+            if (hasattr(p, 'text')):
+                letra_cancion = letra_cancion + p.text
+
     return letra_cancion
