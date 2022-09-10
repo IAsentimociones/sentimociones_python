@@ -185,7 +185,9 @@ def obtenerLetraConYaLetras(nombre_cancion, nombre_autor):
 
     # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
     cancion_param_url = cadena.prepararCadena(nombre_cancion).replace(' ', '+').replace('++', '+')
-    cantante_param_url = cadena.prepararCadena(nombre_autor).replace(' ', '+').replace('++', '+')
+    #cantante_param_url = cadena.prepararCadena(nombre_autor).replace(' ', '+').replace('++', '+')
+    # prepara nombre del cantante para mejorar la búsqueda
+    cantante_param_url = cadena.cadenaCorta(nombre_autor)
     print('------------------')
     print('cancion: ', cancion_param_url)
     print('cantante: ', cantante_param_url)
@@ -219,7 +221,7 @@ def obtenerLetraConYaLetras(nombre_cancion, nombre_autor):
             print('link letra: ', link_letra)
 
             # valida autor y canción para obtener el enlace a la letra de la canción
-            if cadena.contieneCadena(nombre_cancion, cancion_autor) and cadena.contieneCadena(nombre_autor, cancion_autor):
+            if cadena.contieneCadena(nombre_cancion, cancion_autor) and cadena.contieneCadena(cantante_param_url, cancion_autor):
                 url_letra_cancion =  link_letra
             else:
                 print('autor y canción no coinciden')

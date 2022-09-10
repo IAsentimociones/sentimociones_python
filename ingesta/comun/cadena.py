@@ -69,3 +69,13 @@ def contieneCadena(cadena, cadena_completa):
         return True
     else:
         return False
+
+def cadenaCorta(cadena):
+    """
+    Función que retorna una cadena corta discriminando caracteres despúes de los espacios  
+    Argumentos:
+        cadena: cadena con espacios
+    Retorna: cadena corta
+    """
+    cadena_corta = cadena.split(' ')
+    return cadena_corta[0]
