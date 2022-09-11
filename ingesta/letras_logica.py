@@ -92,7 +92,8 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
         job_elements_letra = results_letra_cancion.find_all("div", class_="lyric clearfix")
         for job_element in job_elements_letra:
             letra = job_element.find("pre", id="lyric-body-text")
-        letra_cancion = letra.text
+        if (hasattr(letra_cancion, 'text')):
+            letra_cancion = letra.text
 
     return letra_cancion
 

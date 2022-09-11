@@ -7,6 +7,7 @@ from bdd import mongoDB_cliente
 
 ESTADO_SIN_LETRA = "SIN LETRA"
 ESTADO_CON_LETRA = "CON LETRA"
+ESTADO_NO_ENCONTRADO = "NO ENCONTRADO"
 NOMBRE_COLECCION_CANCIONES = "CANCIONES"
 
 def insertarCancionCantante(elementosExtraidos):
@@ -51,3 +52,14 @@ def actualizarCancionPendiente(coleccion_cancion_pendiente, letra_cancion):
         mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
             {"$set": {'letra': letra_cancion, 'estado': ESTADO_CON_LETRA}})
         return "documento actualizado correctamente"
+
+def actualizarCancionNoEncontrado(coleccion_cancion_pendiente, letra_cancion):
+    """
+    Función que actualiza una colección de cancion que no pudo obtener la letra 
+    Argumentos:
+        coleccion_cancion_pendiente: objeto de tipo colección de canción
+        letra_cancion: letra de la canción
+    """
+    mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
+        {"$set": {'estado': ESTADO_NO_ENCONTRADO}})
+    return "documento actualizado correctamente"

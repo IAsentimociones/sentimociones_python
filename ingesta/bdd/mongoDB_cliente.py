@@ -51,7 +51,8 @@ def obtenerColeccion(nombre_coleccion, filtro):
     """
     base_datos = conectar()
     coleccion_db = base_datos[nombre_coleccion]
-    canciones = coleccion_db.find(filtro).limit(1) # quitar el limite para obtener todas las canciones sin letras
+    canciones = coleccion_db.find(filtro)
+    #.limit(1) # quitar el limite para obtener todas las canciones sin letras
     return canciones
 
 def actualizarColeccion(nombre_coleccion, coleccion, atributos):
