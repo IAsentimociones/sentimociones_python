@@ -91,7 +91,6 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
         results_letra_cancion = soup_letra_cancion.find(id="content-body")
         job_elements_letra = results_letra_cancion.find_all("div", class_="lyric clearfix")
         for job_element in job_elements_letra:
-            print(job_element)
             letra = job_element.find("pre", id="lyric-body-text")
         letra_cancion = letra.text
 
@@ -378,15 +377,19 @@ def obtenerLetraConGoogle(nombre_cancion, nombre_autor):
 
         page_letra_cancion = requests.get(url_letra_simple[0])
         soup_letra_cancion = BeautifulSoup(page_letra_cancion.content, "html.parser")
-        if es_letrassingle_es and es_letras_com:
+        if es_letrassingle_es or es_letras_com:
             p_main = soup_letra_cancion.find_all("p")
             aux = 0
             for p in p_main:
                 if (es_letras_com):
                     spans = p.findAll("span")
-                    for span in spans:
-                        if hasattr(span, 'text'):
-                            letra_cancion = letra_cancion + span.text + ' '
+                    if (not spans):
+                        if hasattr(p, 'text'):
+                            letra_cancion = letra_cancion + p.text + ' '
+                    else:
+                        for span in spans:
+                            if hasattr(span, 'text'):
+                                letra_cancion = letra_cancion + span.text + ' '
                 elif (es_letrassingle_es):
                     if hasattr(p, 'text'):
                         if (cadena.contieneCadena(cadena.cadenaCorta(nombre_autor), p.text)):
