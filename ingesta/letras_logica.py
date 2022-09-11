@@ -318,3 +318,71 @@ def obtenerLetraConCancioneros(nombre_cancion, nombre_autor):
                 letra_cancion = letra_cancion + p.text
 
     return letra_cancion
+
+def obtenerLetraConGoogle(nombre_cancion, nombre_autor):
+    """
+    Función que extrae la letra de una canción desde google.com 
+    Argumentos:
+        nombre_cancion: nombre de la cancion
+        nombre_autor: nombre de autor o cantante
+    Retorna: letra de la canción o vacío
+    """
+    WEB_GOOGLE = "https://www.google.com/search?q=letra+"
+    letra_cancion = ''
+
+    # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
+    cancion_param_url = cadena.prepararCadena(nombre_cancion).replace(' ', '+').replace('++', '+')
+    cantante_param_url = cadena.prepararCadena(nombre_autor).replace(' ', '+').replace('++', '+')
+    print('------------------')
+    print('cancion: ', cancion_param_url)
+    print('cantante: ', cantante_param_url)
+
+    # prepara URL de Lyrics para buscar letras por cancion y autor
+    cancion_autor_code_url = cancion_param_url + '+' + cantante_param_url
+    url_busqueda_google = '%s%s' % (WEB_GOOGLE, cancion_autor_code_url) 
+    print('URL búsqueda en cancioneros.com: ', url_busqueda_google)
+    print('------------------')
+
+    page = requests.get(url_busqueda_google)
+    soup = BeautifulSoup(page.content, "html.parser")
+
+    # obtiene todas las referencias con letras de canciones
+    a_main = soup.findAll("a")
+    url_letra_cancion = ''
+    for a in a_main:
+        href = a.get("href") 
+        if cadena.contieneCadena('https', href) and cadena.contieneCadena('letra', href) and not cadena.contieneCadena('google', href) and cadena.contieneCadena(cadena.cadenaCorta(nombre_cancion), href) and cadena.contieneCadena(cadena.cadenaCorta(nombre_autor), href):
+            url_letra_cancion = href.replace('/url?q=', '')
+            break
+
+    if url_letra_cancion == '':
+        print('No se pudo determinar la URL de la canción')
+        print('-----------------')
+    else:
+        url_letra_simple =  url_letra_cancion.split('&')
+        print ('url letra canción: ', url_letra_simple[0])
+        print('-----------------')
+
+        es_letrassingle_es = cadena.contieneCadena('www.letraseningles.es', url_letra_simple[0])
+        es_letras_com = cadena.contieneCadena('www.letras.com', url_letra_simple[0])
+
+        page_letra_cancion = requests.get(url_letra_simple[0])
+        soup_letra_cancion = BeautifulSoup(page_letra_cancion.content, "html.parser")
+        p_main = soup_letra_cancion.find_all("p")
+
+        aux = 0
+        for p in p_main:
+            if (es_letras_com):
+                spans = p.findAll("span")
+                for span in spans:
+                    if hasattr(span, 'text'):
+                        letra_cancion = letra_cancion + span.text + ' '
+            elif (es_letrassingle_es):
+                if hasattr(p, 'text'):
+                    if (cadena.contieneCadena(cadena.cadenaCorta(nombre_autor), p.text)):
+                        aux = aux + 1
+                    if (aux == 1):
+                            letra_cancion = letra_cancion + p.text
+
+   
+    return letra_cancion

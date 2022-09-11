@@ -38,7 +38,7 @@ def prepararCadena(cadena):
         cadena: cadena de texto alfanumérico
     Retorna: cadena preprocesada
     """
-    # tranforma cadena minúsculas
+    # transforma cadena minúsculas
     cadena_pre = cadena.casefold();
 
     # limpia de caracteres especiales
