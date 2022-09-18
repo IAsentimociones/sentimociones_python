@@ -8,6 +8,7 @@ from bdd import mongoDB_cliente
 ESTADO_SIN_LETRA = "SIN LETRA"
 ESTADO_CON_LETRA = "CON LETRA"
 ESTADO_NO_ENCONTRADO = "NO ENCONTRADO"
+
 NOMBRE_COLECCION_CANCIONES = "CANCIONES"
 
 def insertarCancionCantante(elementosExtraidos):
@@ -28,14 +29,14 @@ def insertarCancionCantante(elementosExtraidos):
        
     return lista_canciones
 
-def obtenerCancionesPendientes():
+def obtenerCancionesPorEstado(estado):
     """
     Función que obtiene colección de canciones por estado
     Argumentos:
         estado: estado de la canción
     Retorna: colección de canciones
     """
-    canciones_sin_letra = mongoDB_cliente.obtenerColeccion(NOMBRE_COLECCION_CANCIONES, {'estado': ESTADO_SIN_LETRA})
+    canciones_sin_letra = mongoDB_cliente.obtenerColeccion(NOMBRE_COLECCION_CANCIONES, {'estado': estado})
        
     return canciones_sin_letra
 
