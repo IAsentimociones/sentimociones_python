@@ -8,6 +8,7 @@ from bdd import mongoDB_cliente
 ESTADO_SIN_LETRA = "SIN LETRA"
 ESTADO_CON_LETRA = "CON LETRA"
 ESTADO_NO_ENCONTRADO = "NO ENCONTRADO"
+ESTADO_LETRA_PREPROCESADO = "LETRA PREPROCESADO"
 
 NOMBRE_COLECCION_CANCIONES = "CANCIONES"
 
@@ -54,13 +55,23 @@ def actualizarCancionPendiente(coleccion_cancion_pendiente, letra_cancion):
             {"$set": {'letra': letra_cancion, 'estado': ESTADO_CON_LETRA}})
         return "documento actualizado correctamente"
 
-def actualizarCancionNoEncontrado(coleccion_cancion_pendiente, letra_cancion):
+def actualizarCancionNoEncontrado(coleccion_cancion_pendiente):
     """
     Función que actualiza una colección de cancion que no pudo obtener la letra 
     Argumentos:
         coleccion_cancion_pendiente: objeto de tipo colección de canción
-        letra_cancion: letra de la canción
     """
     mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
         {"$set": {'estado': ESTADO_NO_ENCONTRADO}})
+    return "documento actualizado correctamente"
+
+def actualizarCancionPreprocesado(coleccion_cancion_pendiente, letra_preprocesada):
+    """
+    Función que actualiza una colección de cancion con la letra depurada y preprocesada 
+    Argumentos:
+        coleccion_cancion_pendiente: objeto de tipo colección de canción
+        letra_preprocesada: letra depurada y preprocesada
+    """
+    mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
+        {"$set": {'estado': ESTADO_LETRA_PREPROCESADO, 'letra_preprocesada': letra_preprocesada}})
     return "documento actualizado correctamente"

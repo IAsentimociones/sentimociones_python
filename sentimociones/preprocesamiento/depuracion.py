@@ -6,7 +6,7 @@ Implementa estrategias de eliminación de palabras: vacías, sin significado, du
 from nltk.corpus import stopwords
 
 PALABRAS_VACIAS = ['tr', 'fact', 'morad', "ale\'", "ilegale\'", "ista\'", 'ja', 'jaja', 'jajaja', 'jajajaja', 'ah', 'lez', 'pa', "pa\'"
-, "e\'", 'pe', 'ale']
+, "e\'", 'pe', 'ale', "ere\'", "atrá\'", 'ey', 'ere\'', 'ey', 'yah', 'uh', 'wh', 'yih', 've\'', 'ra', 'rauw']
 
 
 def eliminarPalabrasVacias(contenido):
