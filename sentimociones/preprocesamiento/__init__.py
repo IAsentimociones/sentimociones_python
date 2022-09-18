@@ -6,4 +6,4 @@ Este paquete incluye funciones para el pre procesamiento de las letras de cancio
 
 """
 
-import preprocesamiento.tokenizacion
+import preprocesamiento.tokenizacion, preprocesamiento.depuracion

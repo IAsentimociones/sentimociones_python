@@ -5,7 +5,7 @@ Implementa estrategias de tokenización con librerías de Natural Language Toolk
 """
 from nltk.tokenize import TreebankWordTokenizer, word_tokenize, regexp_tokenize
 
-EXPRESION_REGULAR_ALFABETO = "[\w']+"
+EXPRESION_REGULAR_ALFABETO = "[A-Za-z][\w']+"
 #https://www.nltk.org/api/nltk.tokenize.regexp.html  OTRAS EXPRESIONES
 
 
