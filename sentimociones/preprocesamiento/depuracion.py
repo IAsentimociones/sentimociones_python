@@ -4,6 +4,9 @@ Módulo depuracion.py
 Implementa estrategias de eliminación de palabras: vacías, sin significado, duplicaciones, stop words y números
 """
 from nltk.corpus import stopwords
+#from cajaBlanca import logger
+
+ARCHIVO_LOG = 'Preprocesamiento.log'
 
 PALABRAS_VACIAS = ['tr', 'fact', 'morad', "ale\'", "ilegale\'", "ista\'", 'ja', 'jaja', 'jajaja', 'jajajaja', 'ah', 'lez', 'pa', "pa\'"
 , "e\'", 'pe', 'ale', "ere\'", "atrá\'", 'ey', 'ere\'', 'ey', 'yah', 'uh', 'wh', 'yih', 've\'', 'ra', 'rauw']
@@ -21,10 +24,11 @@ def eliminarPalabrasVacias(contenido):
 
     contenido_depurado = []
     for palabra in contenido:
-        palabra = palabra.lower()
+        palabra = palabra.
         if (palabra not in palabras_vacias_ingles) and (palabra not in palabras_vacias_espanol) and (palabra not in PALABRAS_VACIAS):
             contenido_depurado.append(palabra)
-    
+    #log = logger.configurar(ARCHIVO_LOG, 'depuracion.py')
+    #log.info('Termina depuración')
     return contenido_depurado
 
 
