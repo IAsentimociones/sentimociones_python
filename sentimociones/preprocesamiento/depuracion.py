@@ -24,9 +24,9 @@ def eliminarPalabrasVacias(contenido):
 
     contenido_depurado = []
     for palabra in contenido:
-        palabra = palabra.
+        palabra = palabra.lower()
         if (palabra not in palabras_vacias_ingles) and (palabra not in palabras_vacias_espanol) and (palabra not in PALABRAS_VACIAS):
-            contenido_depurado.append(palabra)
+            contenido_depurado.append(palabra.upper())
     #log = logger.configurar(ARCHIVO_LOG, 'depuracion.py')
     #log.info('Termina depuración')
     return contenido_depurado
