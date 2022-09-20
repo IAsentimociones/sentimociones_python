@@ -13,6 +13,11 @@ NOMBRE_COLECCION_AUDITORIA = "AUDITORIA"
 TIPO_AUDITORIA_PROCESO = 'Proceso'
 TIPO_AUDITORIA_ML = 'Modelos Aprendizaje Automático'
 
+ESTADO_COMPLETADO = 'COMPLETADO'
+ESTADO_ERROR = 'ERROR'
+RESULTADO_EXITO = 'resultado:exito'
+RESULTADO_FRACASO = 'resultado:fracaso'
+
 def registrarPistaProceso(coleccion):
     """
     Función que inserta una pista en la colección de auditoría para procesos en mongo DB

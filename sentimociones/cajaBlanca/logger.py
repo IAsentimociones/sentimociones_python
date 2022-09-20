@@ -4,9 +4,12 @@ Módulo logger.py
 Configura y parametriza el logging para el registro en archivos planos
 """
 import logging
+import sys
 
-FORMATO_LOG = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-FORMATO_FECHA = '%m/%d/%Y %I:%M:%S %p'
+sys.path.append(sys.path[0] + '/..')
+FORMATO_LOG = '%(asctime)s - %(levelname)s - %(name)s -  - %(message)s'
+
+PATH_LOGS = sys.path[0] + "/cajaBlanca/logs/"
 
 def configurar(nombreArchivo, nombreClase):
     """
@@ -16,8 +19,10 @@ def configurar(nombreArchivo, nombreClase):
         nombreClase: nombre de la clase
     Retorna: logger configurado
     """
-    logging.basicConfig(filename=nombreArchivo, format=FORMATO_LOG, datefmt=FORMATO_FECHA)
+    controlador = logging.FileHandler(PATH_LOGS + nombreArchivo, "w", encoding = "UTF-8")
+    formato = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+    controlador.setFormatter(formato)
     logger = logging.getLogger(nombreClase)
-    logger.setLevel(logging.DEBUG)
-       
+    logger.addHandler(controlador)
+    logger.setLevel(logging.INFO) # utilizar DEBUG para analizar la extracción de letras
     return logger

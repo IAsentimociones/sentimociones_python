@@ -6,8 +6,12 @@ Implementación de lógica de negocio para obtener letras de canciones de difere
 import urllib.parse
 import requests
 from bs4 import BeautifulSoup
-import cancion_logica
+import sys
+sys.path.append(sys.path[0] + '/..')
 from comun import cadena
+from cajaBlanca import logger
+
+log = logger.configurar ('GestionLetras.log', __name__)
 
 
 def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
@@ -18,23 +22,21 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
         nombre_autor: nombre de autor o cantante
     Retorna: letra de la canción o vacío
     """
-    
+    log.debug('Inicia extracción de letras con: www.lyrics.com')
     WEB_LYRICS = "https://www.lyrics.com/lyrics/"
     letra_cancion = ''
 
     # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
     cancion_code_url = urllib.parse.quote(cadena.prepararCadena(nombre_cancion))
     cantante_code_url = urllib.parse.quote(cadena.prepararCadena(nombre_autor))
-    print('------------------')
-    print('cancion: ', cancion_code_url)
-    print('cantante: ', cantante_code_url)
+    log.debug('cancion: ' + cancion_code_url)
+    log.debug('cantante: ' + cantante_code_url)
 
     # prepara URL de Lyrics para buscar letras por cancion y autor
     cancion_autor_code_url = cancion_code_url + '%20' + cantante_code_url 
     #urllib.parse.quote(cancion_code_url + ' ' + cantante_code_url)
     url_busqueda_lyrics = '%s%s' % (WEB_LYRICS, cancion_autor_code_url) 
-    print('URL búsqueda en Lyrics: ', url_busqueda_lyrics)
-    print('------------------')
+    log.debug('URL búsqueda en Lyrics: ' + url_busqueda_lyrics)
 
     # obtiene del contenido web la letra de la canción
     page = requests.get(url_busqueda_lyrics)
@@ -56,32 +58,27 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
         cancion_lyrics = cancion_elem.text
         ref = job_element.find("pre", class_="lyric-body")
 
-        print("cancion lyrics: ", cancion_lyrics)
-        print("autor lyrics: ", autor_lyrics)
-        print("url letra lyrics: ", ref.attrs['onclick'])
-        print("cancion bdd: " + nombre_cancion)
-        print("autor bdd: " + nombre_autor)
+        log.debug("cancion lyrics: " + cancion_lyrics)
+        log.debug("autor lyrics: " + autor_lyrics)
+        log.debug("url letra lyrics: " + ref.attrs['onclick'])
+        log.debug("cancion bdd: " + nombre_cancion)
+        log.debug("autor bdd: " + nombre_autor)
         
         # valida autor y canción para obtener el enlace a la letra de la canción
         if ((cadena.contieneCadena(cancion_lyrics, nombre_cancion) and cadena.contieneCadena(autor_lyrics, nombre_autor)) 
             or (cadena.contieneCadena(nombre_cancion, cancion_lyrics) and cadena.contieneCadena(nombre_autor, autor_lyrics))):
             url_letra_cancion =  ref.attrs['onclick']
-            print ('coinciden autor y cancion. Url de letra: ', url_letra_cancion)
+            log.debug ('coinciden autor y cancion. Url de letra: ' + url_letra_cancion)
             break
         else:
-            print('autor y canción no coinciden')
-            print('-----------------')
-
+            log.debug('autor y canción no coinciden')
         
     if url_letra_cancion == '':
-        print('No se pudo determinar la URL de la canción')
-        print('-----------------')
+        log.debug('No se pudo determinar la URL de la canción')
     else:
-        print ('referencia url letra canción: ', url_letra_cancion)
+        log.debug ('referencia url letra canción: ' + url_letra_cancion)
         url_letra_cancion = url_letra_cancion.split('=')[1].replace('\'','')
-        print ('url letra canción: ', url_letra_cancion)
-        print('-----------------')
-
+        log.debug ('url letra canción: ' + url_letra_cancion)
         
         # obtiene contenido de la página web de la letra de la canción
         page_letra_cancion = requests.get(url_letra_cancion)
@@ -95,6 +92,7 @@ def obtenerLetraConLyrics(nombre_cancion, nombre_autor):
         if (hasattr(letra_cancion, 'text')):
             letra_cancion = letra.text
 
+    log.debug('fin extracción')
     return letra_cancion
 
 def obtenerLetraConLetras4u(nombre_cancion, nombre_autor):
@@ -105,7 +103,7 @@ def obtenerLetraConLetras4u(nombre_cancion, nombre_autor):
         nombre_autor: nombre de autor o cantante
     Retorna: letra de la canción o vacío
     """
-    
+    log.debug('Inicia extracción de letras con: www.letras4u.com')
     WEB_LETRAS4U = "https://www.letras4u.com/buscar.php?letrade="
     SUBMIT_BUSCAR = '&Submit=Buscar'
     letra_cancion = ''
@@ -113,15 +111,13 @@ def obtenerLetraConLetras4u(nombre_cancion, nombre_autor):
     # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
     cancion_param_url = cadena.prepararCadena(nombre_cancion).replace(' ', '+').replace('++', '+')
     cantante_param_url = cadena.prepararCadena(nombre_autor).replace(' ', '+').replace('++', '+')
-    print('------------------')
-    print('cancion: ', cancion_param_url)
-    print('cantante: ', cantante_param_url)
+    log.debug('cancion: ' + cancion_param_url)
+    log.debug('cantante: ' + cantante_param_url)
 
     # prepara URL de Lyrics para buscar letras por cancion y autor
     cancion_autor_code_url = cancion_param_url + '+' + cantante_param_url
     url_busqueda_letras4u = '%s%s%s' % (WEB_LETRAS4U, cancion_autor_code_url, SUBMIT_BUSCAR) 
-    print('URL búsqueda en Letras4u: ', url_busqueda_letras4u)
-    print('------------------')
+    log.debug('URL búsqueda en Letras4u: ' + url_busqueda_letras4u)
 
     # Obtiene el contenido web del resultado de búsqueda
     page_letra4u = requests.get(url_busqueda_letras4u)
@@ -140,24 +136,21 @@ def obtenerLetraConLetras4u(nombre_cancion, nombre_autor):
         if (hasattr(link_cancion_autor, 'text')):
             cancion_autor = link_cancion_autor.text
             link_letra = link_cancion_autor.get("href")  
-            print('cancion autor: ', cancion_autor)
-            print('link letra: ', link_letra)
+            log.debug('cancion autor: ' + cancion_autor)
+            log.debug('link letra: ' + link_letra)
             # valida autor y canción para obtener el enlace a la letra de la canción
             if cadena.contieneCadena(nombre_cancion, cancion_autor) and cadena.contieneCadena(nombre_autor, cancion_autor):
                 url_letra_cancion =  link_letra
-                print ('coinciden autor y cancion. Url de letra: ', url_letra_cancion)
+                log.debug ('coinciden autor y cancion. Url de letra: ' + url_letra_cancion)
                 break
             else:
-                print('autor y canción no coinciden')
-                print('-----------------')
+                log.debug('autor y canción no coinciden')
     
     # obtiene letra de canción
     if url_letra_cancion == '':
-        print('No se pudo determinar la URL de la canción')
-        print('-----------------')
+        log.debug('No se pudo determinar la URL de la canción')
     else:
-        print ('url letra canción: ', url_letra_cancion)
-        print('-----------------')
+        log.debug ('url letra canción: ' + url_letra_cancion)
         
         # obtiene contenido de la página web de la letra de la canción
         page_letra_cancion = requests.get(url_letra_cancion)
@@ -174,6 +167,7 @@ def obtenerLetraConLetras4u(nombre_cancion, nombre_autor):
             if (hasattr(letra, 'text')):
                 letra_cancion = letra_cancion + letra.text.replace('\n\n\n', '')    
 
+    log.debug('fin extracción')
     return letra_cancion
 
 def obtenerLetraConYaLetras(nombre_cancion, nombre_autor):
@@ -184,7 +178,7 @@ def obtenerLetraConYaLetras(nombre_cancion, nombre_autor):
         nombre_autor: nombre de autor o cantante
     Retorna: letra de la canción o vacío
     """
-    
+    log.debug('Inicia extracción de letras con: www.yaletras.com')
     WEB_YALETRAS = "https://www.yaletras.com/search?q="
     letra_cancion = ''
 
@@ -193,15 +187,13 @@ def obtenerLetraConYaLetras(nombre_cancion, nombre_autor):
     #cantante_param_url = cadena.prepararCadena(nombre_autor).replace(' ', '+').replace('++', '+')
     # prepara nombre del cantante para mejorar la búsqueda
     cantante_param_url = cadena.cadenaCorta(nombre_autor)
-    print('------------------')
-    print('cancion: ', cancion_param_url)
-    print('cantante: ', cantante_param_url)
+    log.debug('cancion: ' + cancion_param_url)
+    log.debug('cantante: ' + cantante_param_url)
 
     # prepara URL de Lyrics para buscar letras por cancion y autor
     cancion_autor_code_url = cancion_param_url + '+' + cantante_param_url
     url_busqueda_letras4u = '%s%s' % (WEB_YALETRAS, cancion_autor_code_url) 
-    print('URL búsqueda en yaletras.com: ', url_busqueda_letras4u)
-    print('------------------')
+    log.debug('URL búsqueda en yaletras.com: ' + url_busqueda_letras4u)
 
     # Obtiene el contenido web del resultado de búsqueda
     page_yaletras = requests.get(url_busqueda_letras4u)
@@ -222,25 +214,22 @@ def obtenerLetraConYaLetras(nombre_cancion, nombre_autor):
         if (hasattr(a, 'text')):
             cancion_autor = a.text.replace('\n', '')
             link_letra = a.get("href") 
-            print('cancion autor: ', cancion_autor)
-            print('link letra: ', link_letra)
+            log.debug('cancion autor: ' + cancion_autor)
+            log.debug('link letra: ' + link_letra)
 
             # valida autor y canción para obtener el enlace a la letra de la canción
             if cadena.contieneCadena(nombre_cancion, cancion_autor) and cadena.contieneCadena(cantante_param_url, cancion_autor):
                 url_letra_cancion =  link_letra
-                print ('coinciden autor y cancion. Url de letra: ', url_letra_cancion)
+                log.debug ('coinciden autor y cancion. Url de letra: ' + url_letra_cancion)
                 break
             else:
-                print('autor y canción no coinciden')
-                print('-----------------')
+                log.debug('autor y canción no coinciden')
 
     # obtiene letra de canción
     if url_letra_cancion == '':
-        print('No se pudo determinar la URL de la canción')
-        print('-----------------')
+        log.debug('No se pudo determinar la URL de la canción')
     else:
-        print ('url letra canción: ', url_letra_cancion)
-        print('-----------------')
+        log.debug ('url letra canción: ' + url_letra_cancion)
 
         # obtiene contenido de la página web de la letra de la canción
         page_letra_cancion = requests.get(url_letra_cancion)
@@ -255,6 +244,7 @@ def obtenerLetraConYaLetras(nombre_cancion, nombre_autor):
             if (hasattr(div, 'text')):
                 letra_cancion = letra_cancion + div.text + ' '
 
+    log.debug('fin de extracción')
     return letra_cancion
 
 def obtenerLetraConCancioneros(nombre_cancion, nombre_autor):
@@ -265,21 +255,20 @@ def obtenerLetraConCancioneros(nombre_cancion, nombre_autor):
         nombre_autor: nombre de autor o cantante
     Retorna: letra de la canción o vacío
     """
+    log.debug('Inicia extracción de letras con: www.cancioneros.com')
     WEB_CANCIONEROS = "https://www.cancioneros.com/letras/buscar.php?CT="
     letra_cancion = ''
 
     # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
     cancion_param_url = cadena.prepararCadena(nombre_cancion).replace(' ', '+').replace('++', '+')
     cantante_param_url = cadena.prepararCadena(nombre_autor).replace(' ', '+').replace('++', '+')
-    print('------------------')
-    print('cancion: ', cancion_param_url)
-    print('cantante: ', cantante_param_url)
+    log.debug('cancion: ' + cancion_param_url)
+    log.debug('cantante: ' + cantante_param_url)
 
     # prepara URL de Lyrics para buscar letras por cancion y autor
     cancion_autor_code_url = cancion_param_url + '+' + cantante_param_url
     url_busqueda_cancioneros = '%s%s' % (WEB_CANCIONEROS, cancion_autor_code_url) 
-    print('URL búsqueda en cancioneros.com: ', url_busqueda_cancioneros)
-    print('------------------')
+    log.debug('URL búsqueda en cancioneros.com: ' + url_busqueda_cancioneros)
 
     # Obtiene el contenido web del resultado de búsqueda
     page = requests.get(url_busqueda_cancioneros)
@@ -297,34 +286,32 @@ def obtenerLetraConCancioneros(nombre_cancion, nombre_autor):
         url_letra_a = a.get("href") 
         if cancion_a != None and autor_a != None:
             # valida autor y canción para obtener el enlace a la letra de la canción
-            print('nombre_cancion ', nombre_cancion)
-            print('cancion_a.text ', cancion_a.text)
+            log.debug('nombre_cancion ' + nombre_cancion)
+            log.debug('cancion_a.text ' + cancion_a.text)
             if cadena.contieneCadena(nombre_cancion, cancion_a.text) or cadena.contieneCadena(cancion_a.text, nombre_cancion):
                 url_letra_cancion =  url_letra_a
-                print ('coinciden autor y cancion. Url de letra: ', url_letra_cancion)
+                log.debug ('coinciden autor y cancion. Url de letra: ' + url_letra_cancion)
                 break
             else:
-                print('autor y canción no coinciden')
-                print('-----------------')
+                log.debug('autor y canción no coinciden')
     # obtiene letra de canción
     if url_letra_cancion == '':
-        print('No se pudo determinar la URL de la canción')
-        print('-----------------')
+        log.debug('No se pudo determinar la URL de la canción')
     else:
-        print ('url letra canción: ', url_letra_cancion)
-        print('-----------------')
+        log.debug ('url letra canción: ' + url_letra_cancion)
 
         url_letra_cancion = 'https://www.cancioneros.com/letras/' + url_letra_cancion
         page_letra_cancion = requests.get(url_letra_cancion)
         soup_letra_cancion = BeautifulSoup(page_letra_cancion.content, "html.parser")
 
         # obtiene el cuerpo del contenido web de la letra de la canción
-        results_letra_cancion = soup_letra_cancion.find("div", class_="inner")
+        #results_letra_cancion = soup_letra_cancion.find("div", class_="inner")
         p_letras = soup_letra_cancion.find("p", class_="lletra_can")
         for p in p_letras:
             if (hasattr(p, 'text')):
                 letra_cancion = letra_cancion + p.text
 
+    log.debug('fin de extracción')
     return letra_cancion
 
 def obtenerLetraConGoogle(nombre_cancion, nombre_autor):
@@ -335,21 +322,20 @@ def obtenerLetraConGoogle(nombre_cancion, nombre_autor):
         nombre_autor: nombre de autor o cantante
     Retorna: letra de la canción o vacío
     """
+    log.debug('Inicia extracción de letras con: www.google.com')
     WEB_GOOGLE = "https://www.google.com/search?q=letra+"
     letra_cancion = ''
 
     # codifica el nombre de la canción y el nombre del cantante como parámetro de URL
     cancion_param_url = cadena.prepararCadena(nombre_cancion).replace(' ', '+').replace('++', '+')
     cantante_param_url = cadena.prepararCadena(nombre_autor).replace(' ', '+').replace('++', '+')
-    print('------------------')
-    print('cancion: ', cancion_param_url)
-    print('cantante: ', cantante_param_url)
+    log.debug('cancion: ' + cancion_param_url)
+    log.debug('cantante: ' + cantante_param_url)
 
     # prepara URL de Lyrics para buscar letras por cancion y autor
     cancion_autor_code_url = cancion_param_url + '+' + cantante_param_url
     url_busqueda_google = '%s%s' % (WEB_GOOGLE, cancion_autor_code_url) 
-    print('URL búsqueda en cancioneros.com: ', url_busqueda_google)
-    print('------------------')
+    log.debug('URL búsqueda en cancioneros.com: ' + url_busqueda_google)
 
     page = requests.get(url_busqueda_google)
     soup = BeautifulSoup(page.content, "html.parser")
@@ -361,16 +347,14 @@ def obtenerLetraConGoogle(nombre_cancion, nombre_autor):
         href = a.get("href") 
         if cadena.contieneCadena('https', href) and cadena.contieneCadena('letra', href) and not cadena.contieneCadena('google', href) and cadena.contieneCadena(cadena.cadenaCorta(nombre_cancion), href) and cadena.contieneCadena(cadena.cadenaCorta(nombre_autor), href):
             url_letra_cancion = href.replace('/url?q=', '')
-            print ('coinciden autor y cancion. Url de letra: ', url_letra_cancion)
+            log.debug ('coinciden autor y cancion. Url de letra: ' + url_letra_cancion)
             break
 
     if url_letra_cancion == '':
-        print('No se pudo determinar la URL de la canción')
-        print('-----------------')
+        log.debug('No se pudo determinar la URL de la canción')
     else:
         url_letra_simple =  url_letra_cancion.split('&')
-        print ('url letra canción: ', url_letra_simple[0])
-        print('-----------------')
+        log.debug ('url letra canción: ' + url_letra_simple[0])
 
         es_letrassingle_es = cadena.contieneCadena('www.letraseningles.es', url_letra_simple[0])
         es_letras_com = cadena.contieneCadena('www.letras.com', url_letra_simple[0])
@@ -406,4 +390,5 @@ def obtenerLetraConGoogle(nombre_cancion, nombre_autor):
                 if hasattr(p, 'text'):
                     letra_cancion = letra_cancion + p.text + ' '
    
+    log.debug('fin de extracción')
     return letra_cancion

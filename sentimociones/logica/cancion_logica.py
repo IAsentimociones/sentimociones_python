@@ -3,7 +3,13 @@ Módulo cancion.py
 
 Implementación de lógica de negocio para canciones
 """
+import sys
+sys.path.append(sys.path[0] + '/..')
 from bdd import mongoDB_cliente
+from cajaBlanca import logger
+
+log = logger.configurar ('GestionCanciones.log', __name__)
+
 
 ESTADO_SIN_LETRA = "SIN LETRA"
 ESTADO_CON_LETRA = "CON LETRA"
@@ -19,16 +25,20 @@ def insertarCancionCantante(elementosExtraidos):
         elementosExtraidos: arreglo de ranking, cancion y cantante
     Retorna: arrego de listas de canciones con el ranking y el identificador principal en BDD
     """
-    # formatea los valores de ranking, canción y cantante en documento para el registro de la colección en MongoDB
-    lista_canciones = []
-    for elemento in elementosExtraidos:
-        ranking, cancion, cantante = elemento
-        # inserta colecciones de canciones en MongoDB
-        cancion_id = mongoDB_cliente.insertarDocumento(NOMBRE_COLECCION_CANCIONES, {"cancion": cancion, "cantante": cantante, "estado": ESTADO_SIN_LETRA})
-        # obtiene lista 
-        lista_canciones.append({"ranking": ranking, "cancion_id": cancion_id})
-       
-    return lista_canciones
+    try:
+        log.info('Registra canciones en base de datos')
+        # formatea los valores de ranking, canción y cantante en documento para el registro de la colección en MongoDB
+        lista_canciones = []
+        for elemento in elementosExtraidos:
+            ranking, cancion, cantante = elemento
+            # inserta colecciones de canciones en MongoDB
+            cancion_id = mongoDB_cliente.insertarDocumento(NOMBRE_COLECCION_CANCIONES, {"cancion": cancion, "cantante": cantante, "estado": ESTADO_SIN_LETRA})
+            # obtiene lista 
+            lista_canciones.append({"ranking": ranking, "cancion_id": cancion_id})
+        
+        return lista_canciones
+    except:
+        log.error("Error al registrar canción: ", sys.exc_info()[0])
 
 def obtenerCancionesPorEstado(estado):
     """
@@ -37,9 +47,12 @@ def obtenerCancionesPorEstado(estado):
         estado: estado de la canción
     Retorna: colección de canciones
     """
-    canciones_sin_letra = mongoDB_cliente.obtenerColeccion(NOMBRE_COLECCION_CANCIONES, {'estado': estado})
-       
-    return canciones_sin_letra
+    try:
+        log.info('Obtiene canciones por estado: ' + estado)
+        canciones_sin_letra = mongoDB_cliente.obtenerColeccion(NOMBRE_COLECCION_CANCIONES, {'estado': estado})   
+        return canciones_sin_letra
+    except:
+        log.error("Error al obtenr canción de base de datos: ", sys.exc_info()[0])
 
 def actualizarCancionPendiente(coleccion_cancion_pendiente, letra_cancion):
     """
