@@ -6,6 +6,7 @@ Implementación de lógica de negocio para canciones
 import sys
 sys.path.append(sys.path[0] + '/..')
 from bdd import mongoDB_cliente
+from comun import fecha, cadena
 
 NOMBRE_COLECCION_AUDITORIA = "AUDITORIA"
 
@@ -18,9 +19,9 @@ def registrarPistaProceso(coleccion):
     Argumentos:
         colección: arreglo de pista de auditoría
     """
-    proceso, fecha, duracion, caracteristicas = coleccion 
+    proceso, tiempo_inicio, caracteristicas = coleccion 
     mongoDB_cliente.insertarDocumento(NOMBRE_COLECCION_AUDITORIA, {"tipo auditoria": TIPO_AUDITORIA_PROCESO, 
-    "nombre": proceso, "fecha": fecha, "duracion": duracion, "caracteristicas": caracteristicas})
+    "nombre": proceso, "fecha": fecha.obtenerFechaTiempoActual(), "duración": cadena.obtenertiempoProcesado(tiempo_inicio), "caracteristicas": caracteristicas})
 
 def registrarPistaModelosML(coleccion):
     """
@@ -28,6 +29,7 @@ def registrarPistaModelosML(coleccion):
     Argumentos:
         colección: arreglo de pista de auditoría
     """
-    modelo, fecha, proceso, parametros, resultados = coleccion 
+    modelo, proceso, tiempo_inicio, parametros, resultados = coleccion
     mongoDB_cliente.insertarDocumento(NOMBRE_COLECCION_AUDITORIA, {"tipo auditoria": TIPO_AUDITORIA_ML, 
-    "modelo": modelo, "fecha": fecha, "proceso": proceso, "parametros": parametros, "resultados": resultados})
+    "modelo": modelo, "fecha": fecha.obtenerFechaTiempoActual() , "proceso": proceso, "duración": cadena.obtenertiempoProcesado(tiempo_inicio), 
+    "parametros": parametros, "resultados": resultados})

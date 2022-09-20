@@ -5,6 +5,7 @@ Funciones comunes para cadenas de texto o alfanumericos
 """
 from re import search
 import unicodedata
+import time
 
 CARACTERES_ESPECIALES = "!()/[]@:,.-*"
 
@@ -79,3 +80,10 @@ def cadenaCorta(cadena):
     """
     cadena_corta = cadena.split(' ')
     return cadena_corta[0]
+
+def obtenertiempoProcesado(tiempo_inicio):
+    """
+    Función que obtiene el tiempo procesado  
+    Retorna: tiempo en segundos en forma de cadena de texto
+    """
+    return ("%s segundos" % (round(time.time() - tiempo_inicio, 0)))
