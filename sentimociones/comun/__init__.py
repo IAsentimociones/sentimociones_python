@@ -6,4 +6,4 @@ Este paquete incluye funciones comunees.
 
 """
 
-import comun.cadena
+import comun.cadena, comun.fecha

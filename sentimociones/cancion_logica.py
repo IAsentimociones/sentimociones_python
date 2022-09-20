@@ -24,7 +24,7 @@ def insertarCancionCantante(elementosExtraidos):
     for elemento in elementosExtraidos:
         ranking, cancion, cantante = elemento
         # inserta colecciones de canciones en MongoDB
-        cancion_id = mongoDB_cliente.insertarDocumento("CANCIONES", {"cancion": cancion, "cantante": cantante, "estado": ESTADO_SIN_LETRA})
+        cancion_id = mongoDB_cliente.insertarDocumento(NOMBRE_COLECCION_CANCIONES, {"cancion": cancion, "cantante": cantante, "estado": ESTADO_SIN_LETRA})
         # obtiene lista 
         lista_canciones.append({"ranking": ranking, "cancion_id": cancion_id})
        

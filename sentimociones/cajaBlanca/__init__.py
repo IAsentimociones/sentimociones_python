@@ -6,4 +6,4 @@ Este paquete incluye funciones para caja blanca (loggin, pistas de auditoría, e
 
 """
 
-import cajaBlanca.logger
+import cajaBlanca.logger, cajaBlanca.auditoria
