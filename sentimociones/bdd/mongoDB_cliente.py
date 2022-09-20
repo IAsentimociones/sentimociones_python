@@ -12,7 +12,7 @@ def conectar():
     Retorna: objeto de base de datos conectada
     """
     cliente = MongoClient('localhost', 27017)
-    base_datos = cliente['test']
+    base_datos = cliente['sentiemocionesDB']
        
     return base_datos
 
@@ -51,7 +51,7 @@ def obtenerColeccion(nombre_coleccion, filtro):
     """
     base_datos = conectar()
     coleccion_db = base_datos[nombre_coleccion]
-    canciones = coleccion_db.find(filtro).limit(1)
+    canciones = coleccion_db.find(filtro)
     #.limit(1) # quitar el limite para obtener todas las canciones sin letras
     return canciones
 
