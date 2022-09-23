@@ -15,7 +15,8 @@ PROCESO_PRINCIPAL = 'Preprocesamiento'
 log = logger.configurar (PROCESO_PRINCIPAL + '.log', __name__)
 
 PALABRAS_VACIAS = ['tr', 'fact', 'morad', "ale\'", "ilegale\'", "ista\'", 'ja', 'jaja', 'jajaja', 'jajajaja', 'ah', 'lez', 'pa', "pa\'"
-, "e\'", 'pe', 'ale', "ere\'", "atrá\'", 'ey', 'ere\'', 'ey', 'yah', 'uh', 'wh', 'yih', 've\'', 'ra', 'rauw']
+, "e\'", 'pe', 'ale', "ere\'", "atrá\'", 'ey', 'ere\'', 'ey', 'yah', 'uh', 'wh', 'yih', 've\'', 'ra', 'rauw', 'lyrics', 'bebã', 'sã'
+, 'dirã', 'quiã', 'mã', 'dã', 'cã³mo', 'fvck', 'ft', 'jt', 'na', 'cÃ³mo', 'mÃ', 'sÃ', 'cÃ³mo', 'actÃºas', 'tãº', 'actãºas']
 
 def eliminarPalabrasVacias(contenido):
     """
@@ -34,7 +35,7 @@ def eliminarPalabrasVacias(contenido):
         for palabra in contenido:
             palabra = palabra.lower()
             if (palabra not in palabras_vacias_ingles) and (palabra not in palabras_vacias_espanol) and (palabra not in PALABRAS_VACIAS):
-                contenido_depurado.append(palabra.upper())
+                contenido_depurado.append(palabra.lower())
         
         auditoria.registrarPistaProceso([PROCESO_PRINCIPAL + ' Eliminación de palabras vacías', tiempo_inicial, ['EXITO']])
         log.info('Finlaliza eliminación de palabras vacías')
