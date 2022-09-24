@@ -87,3 +87,18 @@ def obtenertiempoProcesado(tiempo_inicio):
     Retorna: tiempo en segundos en forma de cadena de texto
     """
     return ("%s segundos" % (round(time.time() - tiempo_inicio, 0)))
+
+def convertirEtiqueta(item, nombre): 
+    """
+    Función que convierte en etiquetas
+        item: elemento de la etiqueta
+        nombre: nombre de la etiqueta
+    Retorna: etiquetas
+    """
+    items = list(map(float, item.split()))
+    etiqueta = ""
+    for idx in range(len(items)): 
+        if items[idx] == 1: 
+            etiqueta += nombre[idx] + " "
+    
+    return etiqueta.strip()
