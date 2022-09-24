@@ -24,5 +24,5 @@ def configurar(nombreArchivo, nombreClase):
     controlador.setFormatter(formato)
     logger = logging.getLogger(nombreClase)
     logger.addHandler(controlador)
-    logger.setLevel(logging.INFO) # utilizar DEBUG para analizar la extracción de letras
+    logger.setLevel(logging.DEBUG) # utilizar DEBUG para analizar la extracción de letras
     return logger
