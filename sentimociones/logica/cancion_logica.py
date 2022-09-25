@@ -88,3 +88,14 @@ def actualizarCancionPreprocesado(coleccion_cancion_pendiente, letra_preprocesad
     mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
         {"$set": {'estado': ESTADO_LETRA_PREPROCESADO, 'letra_preprocesada': letra_preprocesada}})
     return "documento actualizado correctamente"
+
+def actualizarCancionSentimientoMultiple(coleccion_cancion_pendiente, clasificacion):
+    """
+    Función que actualiza una colección de cancion con el resultado de la clasificacion de sentimiento múltiple
+    Argumentos:
+        coleccion_cancion_pendiente: objeto de tipo colección de canción
+        clasificacion: resultados de sentimiento múltiple
+    """
+    mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
+        {"$set": {'sentimiento_multiple': clasificacion}})
+    return "documento actualizado correctamente"
