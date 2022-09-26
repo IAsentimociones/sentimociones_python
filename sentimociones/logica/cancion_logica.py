@@ -99,3 +99,14 @@ def actualizarCancionSentimientoMultiple(coleccion_cancion_pendiente, clasificac
     mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
         {"$set": {'sentimiento_multiple': clasificacion}})
     return "documento actualizado correctamente"
+
+def actualizarCancionSentimientoBinario(coleccion_cancion_pendiente, sentimientoBinario):
+    """
+    Función que actualiza una colección de cancion con el resultado de la clasificacion de sentimiento binario
+    Argumentos:
+        coleccion_cancion_pendiente: objeto de tipo colección de canción
+        sentimientoBinario: resultados de sentimiento binario
+    """
+    mongoDB_cliente.actualizarColeccion(NOMBRE_COLECCION_CANCIONES, coleccion_cancion_pendiente, 
+        {"$set": {'sentimiento_binario': sentimientoBinario}})
+    return "documento actualizado correctamente"
